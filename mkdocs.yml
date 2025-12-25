@@ -1,0 +1,23 @@
+site_name: Fixed Income Modeling Library
+theme:
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - Curves: api/curves.md
+      - Cashflows: api/cashflows.md
+      - Instruments: api/instruments.md
+  - Examples:
+      - Bond pricing: examples/bond_pricing.md
+      - Duration & DV01: examples/risk.md
+      - Annuities: examples/annuities.md
