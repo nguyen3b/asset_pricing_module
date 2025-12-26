@@ -1,6 +1,6 @@
-site_name: Fixed Income Modeling Library
+site_name: Valuation Modeling Library
 theme:
-  name: material
+  name: readthedocs
 
 plugins:
   - search
@@ -17,7 +17,14 @@ nav:
       - Curves: api/curves.md
       - Cashflows: api/cashflows.md
       - Instruments: api/instruments.md
-  - Examples:
-      - Bond pricing: examples/bond_pricing.md
-      - Duration & DV01: examples/risk.md
-      - Annuities: examples/annuities.md
+  # - Examples:
+  #     - Bond pricing: examples/bond_pricing.md
+  #     - Duration & DV01: examples/risk.md
+  #     - Annuities: examples/annuities.md
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
