@@ -45,7 +45,7 @@ from fixed_income import Bond
 
 bond = Bond(face=100, redemption=100, coupon_rate=5.0, maturity=10)
 
-price = bond.price(interest=4.0)   # 4% flat yield
+price = bond.pv(interest=4.0)   # 4% flat yield
 print(price)
 ```
 
@@ -58,7 +58,7 @@ curve = Yield(10)
 curve.set_flat_rate(1, 10, 4.0)
 
 bond = Bond(face=100, redemption=100, coupon_rate=5.0, maturity=10)
-price = bond.price_by_df(curve)
+price = bond.pv_by_df(curve)
 
 print(price)
 ```
@@ -104,7 +104,7 @@ $$
 
 ### Curve-based pricing
 
-`price_by_df(curve)` uses spot discount factors from a `Yield` curve:
+`pv_by_df(curve)` uses spot discount factors from a `Yield` curve:
 
 $$
 P = \sum_{t=1}^{n-1} C \cdot DF(t) + (C + \text{redemption}) \cdot DF(n)
@@ -120,7 +120,7 @@ $$
 
 ## Amortization table
 
-`amortiztion(yield_rate, purchase_price=None)` produces an effective-interest
+`amortization(yield_rate, purchase_price=None)` produces an effective-interest
 amortization schedule (premium/discount amortization).
 
 ### Definitions
@@ -197,7 +197,7 @@ $$
 where:
 
 $$
-P = \text{price_by_df(curve)}
+P = \text{pv_by_df(curve)}
 $$
 
 $$

@@ -1,8 +1,9 @@
+from __future__ import annotations
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-from .curves import Yield
-from typing import Optional, List
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .curves import Yield
 
 class Bond:
     def __init__(self, face, redemption, coupon_rate, maturity):
@@ -14,14 +15,14 @@ class Bond:
     def coupons(self):
         return self.face * self.coupon_rate / 100
 
-    def price(self, interest):
+    def pv(self, interest):
         interest = interest / 100
         coupon = self.coupons()
         discount = pow((1 + interest), - self.maturity)
 
         return  coupon * ((1 - discount)/interest) + self.redemption * (discount)
     
-    def price_by_df(self, curve: Yield) -> float:
+    def pv_by_df(self, curve: Yield) -> float:
         if self.maturity > curve.get_period():
             raise ValueError("yeild curve is to small for maturity periods")
         coupon = self.coupons()
@@ -48,12 +49,12 @@ class Bond:
 
         return df
 
-    def amortiztion(self, yield_rate, purchase_price = None):
+    def amortization(self, yield_rate, purchase_price = None):
         y = yield_rate / 100
         c = float(self.coupons())
         n = int(self.maturity)
         redemption = float(self.redemption)
-        bv = float(purchase_price) if purchase_price is not None else float(self.price(yield_rate)) 
+        bv = float(purchase_price) if purchase_price is not None else float(self.pv(yield_rate)) 
 
         rows = []
         rows.append({
@@ -82,7 +83,7 @@ class Bond:
         return pd.DataFrame(rows)
 
     def duration(self, curve: Yield) -> float:
-        price = self.price_by_df(curve) 
+        price = self.pv_by_df(curve) 
         c =  self.coupons()
         weighted_pv = 0.0
 
@@ -95,7 +96,26 @@ class Bond:
         shock_up = curve.shift(bp)
         shock_down = curve.shift(-bp)
 
-        price_up = self.price_by_df(shock_up)
-        price_down = self.price_by_df(shock_down)
+        price_up = self.pv_by_df(shock_up)
+        price_down = self.pv_by_df(shock_down)
 
         return (price_down - price_up) / 2.0 
+
+class ZeroCouponBond:
+    def __init__(self, maturity: int, face_value: float, price: float):
+        self.maturity = maturity
+        self.face_value = face_value
+        self.pv = price
+
+    def __repr__(self):
+        return f"ZCB(T={self.maturity}, FV={self.face_value}, Price={self.pv:.4f})"
+
+    def get_maturity(self) -> int:
+        return self.maturity
+
+    def implied_df(self) -> float:
+        if self.pv == None:
+            raise ValueError("Need market price to imply DF")
+        
+        return self.pv / self.face_value
+    

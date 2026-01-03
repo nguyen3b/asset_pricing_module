@@ -1,18 +1,69 @@
+from __future__ import annotations
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-from typing import Optional, List
+from typing import Optional, TYPE_CHECKING
+from abc import ABC, abstractmethod
 
-class Yield:
-    n_periods: int
-    rates: List[Optional[float]]
-    def __init__(self, n_periods):
+if TYPE_CHECKING:
+    from .instruments import ZeroCouponBond
+
+class BaseCurve(ABC):
+    def __init__(self, n_periods: int ) -> None:
         self.n_periods = n_periods
+
+    def check_bounds(self, period: int) -> None:
+        if not (1 <= period <= self.n_periods):
+            raise ValueError(f"Parameter not in bounds min: 1 and max is {self.n_periods}")
+
+    @abstractmethod
+    def value_at(self, period: int) -> float:
+        pass
+
+    def plot(self, start: int = 1, end: int | None = None, *, title: str | None = None) -> None:
+        if end is None:
+            end = self.n_periods
+
+        xs = []
+        ys = []
+
+        for t in range(start, end + 1):
+            try:
+                y = self.value_at(t)
+            except ValueError:
+                continue   # skip missing periods
+
+            if y is None:
+                continue
+
+            xs.append(t)
+            ys.append(y)
+
+        if not xs:
+            raise ValueError("No valid data points to plot")
+
+        plt.figure()
+        plt.plot(xs, ys, marker="o")
+        plt.xlabel("Period")
+        plt.ylabel("Value")
+        if title:
+            plt.title(title)
+
+        plt.show(block=True)
+    
+class Yield(BaseCurve):
+    def __init__(self, n_periods: int):
+        super().__init__(n_periods)
         self.rates = [None] * (n_periods + 1)
 
     def set_rate(self, period: int, rate: float) -> None:
         self.check_bounds(period)
         self.rates[period] = rate / 100
+    
+    def get_spot(self, period:int) -> float:
+        self.check_bounds(period)
+        if self.rates[period] == None:
+            raise ValueError(f"period {period} is None")
+        return self.rates[period]
 
     def set_flat_rate(self, start_period: int, end_period: int, rate: float) -> None:
         self.check_bounds(start_period)
@@ -56,13 +107,41 @@ class Yield:
         
         return shifted
     
+    def value_at(self, period: int):
+        return self.get_spot(period)
+
     def print(self) -> None:
         for i in range(1, self.n_periods + 1):
             print(self.rates[i])    
-
-    def check_bounds(self, period: int) -> None:
-        if not (1 <= period <= self.n_periods):
-            raise ValueError(f"Parameter not in bounds min: 1 and max is {self.n_periods}")
     
     def get_period(self) -> int:
         return self.n_periods
+
+class DiscountCurve(BaseCurve):
+    def __init__(self, n_periods: int) -> None:
+        super().__init__(n_periods) 
+        self.rates = [None] * (n_periods + 1)
+
+    def set_rate(self, period: int, rate: float) -> None:
+        self.check_bounds(period)
+        self.rates[period] = rate
+
+    @classmethod
+    def from_zcb(cls, zero_coupon_bonds: list[ZeroCouponBond]):
+        zero_coupon_bonds.sort(key=lambda x: x.get_maturity())
+        curve = cls(zero_coupon_bonds[len(zero_coupon_bonds)-1].get_maturity())
+        for bond in zero_coupon_bonds:
+            maturity = bond.get_maturity()
+            curve.check_bounds(maturity)
+            curve.set_rate(maturity, bond.implied_df())
+
+        return curve
+
+    def df(self, period: int) -> float:
+        self.check_bounds(period)
+        if self.rates[period] == None:
+            raise ValueError(f"period {period} is empty")
+        return self.rates[period]
+
+    def value_at(self, period: int):
+        return self.df(period)
