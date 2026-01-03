@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Curves - Valuation Modeling Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Curves";
+        var mkdocs_page_input_path = "api/curves.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Valuation Modeling Library
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Curves</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#yield-curve-spot-rates">Yield Curve (Spot Rates)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#flat-yield-curve">Flat Yield Curve</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#create-a-linear-curve-eg-3-5">Create a linear curve (e.g 3% -&gt; 5%)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#parallel-shifts">Parallel Shifts</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#discountcurve-discount-factor-curve">DiscountCurve (Discount Factor Curve)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#characteristics">Characteristics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#construction-from-zero-coupon-bonds">Construction from Zero-Coupon Bonds</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#example">Example</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cashflows/">Cashflows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../instruments/">Instruments</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Valuation Modeling Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+      <li class="breadcrumb-item active">Curves</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="curves">Curves</h1>
+<p>This module provides curve objects for <strong>time-value-of-money modeling</strong>,
+including both <strong>spot yield curves</strong> and <strong>discount factor curves</strong>.</p>
+<p>Curves are used to discount cashflows, price fixed-income instruments,
+and perform basic interest-rate risk analysis.</p>
+<p>The module currently supports:</p>
+<ul>
+<li><strong>Spot yield curves</strong> (rates by maturity)</li>
+<li><strong>Discount factor curves</strong> (discount factors by maturity)</li>
+<li>Common curve construction methods (flat, linear)</li>
+<li>Discount factor calculation</li>
+<li>Parallel curve shocks (basis-point shifts) for DV01-style risk</li>
+</ul>
+<hr />
+<h2 id="yield-curve-spot-rates">Yield Curve (Spot Rates)</h2>
+<p>The <code>Yield</code> class represents a <strong>spot yield curve</strong>, storing spot interest
+rates by maturity and deriving discount factors from those rates.</p>
+<p>Spot rates are entered in <strong>percent form</strong> and stored internally as
+<strong>decimals</strong>.</p>
+<hr />
+<h3 id="flat-yield-curve">Flat Yield Curve</h3>
+<pre><code class="language-python">from fixed_income import Yield
+
+curve = Yield(n_periods=10)
+curve.set_flat_rate(start_period=1, end_period=10, rate=4.0)  # 4% flat
+
+df_1y = curve.discount_factor(1)
+df_5y = curve.discount_factor(5)
+
+print(df_1y, df_5y)
+</code></pre>
+<h3 id="create-a-linear-curve-eg-3-5">Create a linear curve (e.g 3% -&gt; 5%)</h3>
+<pre><code class="language-python">
+curve = Yield(10)
+curve.set_linear_rate(
+    start_period=1,
+    end_period=10,
+    start_rate=3.0,
+    end_rate=5.0
+)
+
+print(curve.discount_factor(10))
+
+</code></pre>
+<h3 id="parallel-shifts">Parallel Shifts</h3>
+<pre><code class="language-python">
+curve = Yield(10)
+curve.set_flat_rate(1, 10, 4.0)
+
+curve_up = curve.shift(1.0)     # +1 bp (0.01%)
+curve_dn = curve.shift(-1.0)    # -1 bp
+
+</code></pre>
+<h2 id="discountcurve-discount-factor-curve">DiscountCurve (Discount Factor Curve)</h2>
+<p>The <code>DiscountCurve</code> class stores <strong>discount factors directly</strong> by period.</p>
+<h3 id="characteristics">Characteristics</h3>
+<ul>
+<li>Each period <code>t</code> stores a discount factor <code>DF(t)</code></li>
+<li>Discount factors typically lie in the interval <code>(0, 1]</code></li>
+<li>Useful when discount factors are <strong>observed</strong> or <strong>bootstrapped directly</strong></li>
+<li>Can be constructed manually or from zero-coupon bonds</li>
+</ul>
+<hr />
+<h3 id="construction-from-zero-coupon-bonds">Construction from Zero-Coupon Bonds</h3>
+<p>A zero-coupon bond implies a discount factor at its maturity:</p>
+<div class="arithmatex">\[
+DF(t) = \frac{P}{FV}
+\]</div>
+<p>where:</p>
+<ul>
+<li><span class="arithmatex">\( P \)</span> is the bond price  </li>
+<li><span class="arithmatex">\( FV \)</span> is the face value  </li>
+<li><span class="arithmatex">\( t \)</span> is the maturity in periods  </li>
+</ul>
+<p>The class method<br />
+<code>DiscountCurve.from_zcb(...)</code> constructs a discount curve from a list of
+<code>ZeroCouponBond</code> instruments.</p>
+<ul>
+<li>Bonds are sorted by maturity</li>
+<li>Discount factors are populated at each bond’s maturity</li>
+</ul>
+<hr />
+<h3 id="example">Example</h3>
+<pre><code class="language-python">from fixed_income import DiscountCurve, ZeroCouponBond
+
+zcbs = [
+    ZeroCouponBond(maturity=2, face_value=100.0, price=95.12),
+    ZeroCouponBond(maturity=3, face_value=100.0, price=92.18),
+    ZeroCouponBond(maturity=5, face_value=100.0, price=87.01),
+]
+
+dc = DiscountCurve.from_zcb(zcbs)
+</code></pre>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>
+<p>Rates are entered as <strong>percent values</strong> (e.g. <code>4.0</code> means 4%) and are stored internally as <strong>decimals</strong> (e.g. <code>0.04</code>).</p>
+</li>
+<li>
+<p>Period indexing is <strong>1-based</strong>.<br />
+  Period <code>0</code> is not used for curve rates and is reserved for valuation time.</p>
+</li>
+<li>
+<p>The discount factor for period <span class="arithmatex">\( t \)</span> is computed using <strong>annual compounding</strong>:</p>
+</li>
+</ul>
+<div class="arithmatex">\[
+DF(t) = (1 + r_t)^{-t}
+\]</div>
+<p>where:</p>
+<ul>
+<li><span class="arithmatex">\( r_t \)</span> is the spot rate for period <span class="arithmatex">\( t \)</span>  </li>
+<li><span class="arithmatex">\( t \)</span> is the time in periods</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../.." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cashflows/" class="btn btn-neutral float-right" title="Cashflows">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../.." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../cashflows/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

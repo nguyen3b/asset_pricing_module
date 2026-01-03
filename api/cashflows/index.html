@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Cashflows - Valuation Modeling Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Cashflows";
+        var mkdocs_page_input_path = "api/cashflows.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Valuation Modeling Library
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../curves/">Curves</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Cashflows</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick start</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#create-a-level-cashflow-stream-and-compute-pv-at-a-flat-rate">Create a level cashflow stream and compute PV at a flat rate</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-a-linear-cashflow-stream-eg-100-200">Build a linear cashflow stream (e.g. 100 → 200)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#use-a-yield-curve-for-discounting">Use a yield curve for discounting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#perpetuity-tail-after-the-final-period">Perpetuity tail after the final period</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cashflow-builders">Cashflow builders</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#set_periodperiod-cashflow">set_period(period, cashflow)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fillcashflow">fill(cashflow)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fill_linearstart_period-end_period-start_amt-end_amt">fill_linear(start_period, end_period, start_amt, end_amt)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fill_geometricstart_period-end_period-start_amt-rate">fill_geometric(start_period, end_period, start_amt, rate)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fill_arithmeticstart_period-end_period-start_amt-increase_amt">fill_arithmetic(start_period, end_period, start_amt, increase_amt)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#present-value">Present value</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#flat-rate-pv">Flat-rate PV</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#perpetuity-tail-pv">Perpetuity tail PV</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#curve-discounted-pv">Curve-discounted PV</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../instruments/">Instruments</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Valuation Modeling Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+      <li class="breadcrumb-item active">Cashflows</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cashflows">Cashflows</h1>
+<p>This module provides a simple <strong>cash flow stream</strong> object for building and valuing cashflows over discrete periods.</p>
+<p>A <code>CashFlowStream</code> stores cashflows <code>cf[t]</code> for <code>t = 0..n_periods</code> and supports:</p>
+<ul>
+<li>setting cashflows by period</li>
+<li>filling common cashflow patterns (level, linear, geometric, arithmetic)</li>
+<li>present value using a <strong>flat interest rate</strong></li>
+<li>present value using a <strong>spot yield curve</strong> (<code>Yield</code>) discount factors</li>
+<li>optional perpetuity tail valuation at the final period</li>
+</ul>
+<hr />
+<h2 id="quick-start">Quick start</h2>
+<h3 id="create-a-level-cashflow-stream-and-compute-pv-at-a-flat-rate">Create a level cashflow stream and compute PV at a flat rate</h3>
+<pre><code class="language-python">from fixed_income import CashFlowStream
+
+cfs = CashFlowStream(n_periods=5)
+cfs.fill(100)                 # 100 each period (t=1..5)
+cfs.set_period(0, -450)       # initial outflow at t=0
+
+pv = cfs.pv(interest=5.0)     # 5% flat annual rate
+print(pv)
+</code></pre>
+<h3 id="build-a-linear-cashflow-stream-eg-100-200">Build a linear cashflow stream (e.g. 100 → 200)</h3>
+<pre><code class="language-python">from fixed_income import CashFlowStream
+
+cfs = CashFlowStream(10)
+cfs.fill_linear(
+    start_period=1,
+    end_period=10,
+    start_amt=100,
+    end_amt=200
+)
+
+print(cfs.pv(interest=4.0))
+
+</code></pre>
+<h3 id="use-a-yield-curve-for-discounting">Use a yield curve for discounting</h3>
+<pre><code class="language-python">from fixed_income import Yield, CashFlowStream
+
+curve = Yield(10)
+curve.set_flat_rate(1, 10, 4.0)   # 4% flat spot curve
+
+cfs = CashFlowStream(10)
+cfs.fill(100)
+cfs.set_period(0, -900)
+
+pv = cfs.pv_df(curve)
+print(pv)
+
+</code></pre>
+<h3 id="perpetuity-tail-after-the-final-period">Perpetuity tail after the final period</h3>
+<pre><code class="language-python">from fixed_income import CashFlowStream
+
+cfs = CashFlowStream(5)
+cfs.fill(50)
+cfs.set_period(0, -800)
+
+pv = cfs.pv_perpetuity(interest=6.0)
+print(pv)
+
+</code></pre>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Cashflows are stored for periods <span class="arithmatex">\(t = 0 \dots n_{\text{periods}}\)</span>.</li>
+<li><span class="arithmatex">\(t = 0\)</span> is the valuation time (often an initial investment or price).</li>
+<li>
+<p><span class="arithmatex">\(t \ge 1\)</span> are future cashflows.</p>
+</li>
+<li>
+<p>Period indexing is <strong>1-based</strong> for future periods, consistent with the yield
+  curve module.</p>
+</li>
+<li>
+<p>All fill methods write cashflows into the internal array.
+  If any period required for valuation is <code>None</code>, valuation will raise an error.</p>
+</li>
+</ul>
+<hr />
+<h2 id="cashflow-builders">Cashflow builders</h2>
+<h3 id="set_periodperiod-cashflow"><code>set_period(period, cashflow)</code></h3>
+<p>Sets a single cashflow at a specific period.</p>
+<hr />
+<h3 id="fillcashflow"><code>fill(cashflow)</code></h3>
+<p>Fills every period <span class="arithmatex">\(t = 1 \dots n_{\text{periods}}\)</span> with the same cashflow amount.</p>
+<hr />
+<h3 id="fill_linearstart_period-end_period-start_amt-end_amt"><code>fill_linear(start_period, end_period, start_amt, end_amt)</code></h3>
+<p>Creates a linear ramp from <code>start_amt</code> to <code>end_amt</code> over the specified range
+(inclusive).</p>
+<p>Cashflows follow:</p>
+<div class="arithmatex">\[CF_t = CF_{\text{start}} + m (t - \text{start})\]</div>
+<p>where:</p>
+<div class="arithmatex">\[m = \dfrac{CF_{\text{end}} - CF_{\text{start}}}{\text{end} - \text{start}}\]</div>
+<hr />
+<h3 id="fill_geometricstart_period-end_period-start_amt-rate"><code>fill_geometric(start_period, end_period, start_amt, rate)</code></h3>
+<p>Creates geometric growth cashflows.</p>
+<ul>
+<li><code>rate</code> is entered as a <strong>percent</strong> (e.g. <code>3.0</code> means 3%).</li>
+</ul>
+<p>Cashflows follow:</p>
+<div class="arithmatex">\[CF_t = CF_{\text{start}} (1 + g)^{(t - \text{start})}\]</div>
+<p>where:</p>
+<div class="arithmatex">\[g = \dfrac{\text{rate}}{100}\]</div>
+<hr />
+<h3 id="fill_arithmeticstart_period-end_period-start_amt-increase_amt"><code>fill_arithmetic(start_period, end_period, start_amt, increase_amt)</code></h3>
+<p>Creates arithmetic growth cashflows.</p>
+<p>Cashflows follow:</p>
+<div class="arithmatex">\[CF_t = CF_{\text{start}} + k (t - \text{start})\]</div>
+<p>where:</p>
+<p><span class="arithmatex">\(k\)</span> is the per-period increase amount.</p>
+<hr />
+<h2 id="present-value">Present value</h2>
+<h3 id="flat-rate-pv">Flat-rate PV</h3>
+<p><code>pv(interest)</code> computes:</p>
+<div class="arithmatex">\[PV = \sum_{t=0}^{n} CF_t (1 + i)^{-t}\]</div>
+<p>where:</p>
+<div class="arithmatex">\[i = \dfrac{\text{interest}}{100}\]</div>
+<p>Annual compounding is assumed.</p>
+<hr />
+<h3 id="perpetuity-tail-pv">Perpetuity tail PV</h3>
+<p><code>pv_perpetuity(interest)</code> computes the present value up to <span class="arithmatex">\(n_{\text{periods}}\)</span>
+and then adds a perpetuity tail based on the final cashflow:</p>
+<div class="arithmatex">\[PV = \sum_{t=0}^{n} CF_t (1 + i)^{-t} + \left(\dfrac{CF_n}{i}\right)(1 + i)^{-n}\]</div>
+<p>This assumes the final cashflow repeats forever beyond the last period.</p>
+<hr />
+<h3 id="curve-discounted-pv">Curve-discounted PV</h3>
+<p><code>pv_df(curve)</code> discounts each cashflow using spot discount factors from a
+<code>Yield</code> curve:</p>
+<div class="arithmatex">\[PV = CF_0 + \sum_{t=1}^{n} CF_t \cdot DF(t)\]</div>
+<p>where <span class="arithmatex">\(DF(t)\)</span> is computed by <code>Yield.discount_factor(t)</code>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../curves/" class="btn btn-neutral float-left" title="Curves"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../instruments/" class="btn btn-neutral float-right" title="Instruments">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../curves/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../instruments/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
